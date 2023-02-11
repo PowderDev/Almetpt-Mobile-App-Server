@@ -1,21 +1,6 @@
 import { ElementHandle, Page } from "puppeteer"
-
-interface RequestedDataItem {
-  prop?: "textContent" | "src" | "title"
-  selector: string
-  name: string
-  formatValue?: (val: string) => string
-}
-
-type ResponseDataItem = { [key: string]: string | number }
-type ResponseData = ResponseDataItem[]
-
-export interface Grade {
-  day: string
-  classIndex?: number
-  grade: string
-  month: number
-}
+import { Grade } from "../types/journal"
+import { RequestedDataItem, ResponseDataItem } from "../types/parsing"
 
 export async function getParsedDataBySelectorAll(
   page: ElementHandle | Page,
@@ -25,7 +10,7 @@ export async function getParsedDataBySelectorAll(
   // await page.waitForSelector(rootSelector)
   const elements = await page.$$(rootSelector)
 
-  let res = [] as ResponseData
+  let res = [] as ResponseDataItem[]
 
   for (const [index, element] of elements.entries()) {
     for (let i = 0; i < data.length; i++) {
@@ -56,7 +41,7 @@ export async function getParsedDataBySelector(
   const element = await page.$(rootSelector)
 
   if (element) {
-    let res = [] as ResponseData
+    let res = [] as ResponseDataItem[]
 
     for (let i = 0; i < data.length; i++) {
       const item = data[i]

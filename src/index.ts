@@ -21,15 +21,17 @@ async function bootstrap() {
   await redis.connect()
   redis.on("error", (err) => console.log("Redis Client Error", err))
 
+  redis.flushAll()
+
   const browser = await getBrowser()
   const page = await browser.newPage()
-  page.setRequestInterception(true)
+  // page.setRequestInterception(true)
 
-  const block_ressources = ["image", "stylesheet", "media", "font"]
-  page.on("request", (request) => {
-    if (block_ressources.includes(request.resourceType())) request.abort()
-    else request.continue()
-  })
+  // const block_ressources = ["image", "stylesheet", "media", "font"]
+  // page.on("request", (request) => {
+  //   if (block_ressources.includes(request.resourceType())) request.abort()
+  //   else request.continue()
+  // })
 
   app.get("/groups", (req, res) => groupsRoute(req, res, redis))
   app.get("/schedule/:groupId/:date", (req, res) => scheduleRoute(req, res, redis, page))

@@ -1,4 +1,4 @@
-import { Grade } from "../healpers/parsing"
+import { Grade } from "./journal"
 
 export interface JournalItem {
   className: string

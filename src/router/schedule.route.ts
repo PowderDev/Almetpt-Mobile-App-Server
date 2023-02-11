@@ -19,6 +19,7 @@ export default async function (req: Request, res: Response, redis: RedisClient, 
     } else {
       await redis.set(`schedule/${groupId}/${date}`, JSON.stringify(data))
     }
+
     return res.json(data)
   } catch {
     return res.status(400).json({ message: "Unknown issue" })

@@ -1,39 +1,20 @@
 import { Page } from "puppeteer"
-import { getParsedDataBySelector } from "../../lib/healpers/parsing"
+import { getSchoolReportHTML } from "../../lib/http/overallGrades"
+import { getDate } from "../../lib/utils/journal"
+import { formatOverallGrades, overallGradesSelectors } from "../../lib/utils/overallGrades"
+import { getParsedDataBySelector } from "../../lib/utils/parsing"
 
 export default async function parseOverallGrades(page: Page, elco_session: string) {
-  const date = new Date()
-  const year = date.getFullYear()
-  const now = date.getMilliseconds()
+  const { year, now, semestr } = getDate()
 
-  const schoolReportResponse = await fetch(
-    `https://almetpt.ru/students/magazine?semestr=2&academicYear=${year - 1}&_=${now}`,
-    {
-      headers: {
-        Cookie: `elco_session=${elco_session}`,
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    }
-  )
-
-  const html = await schoolReportResponse.text()
+  const html = await getSchoolReportHTML(year - 1, now, semestr, elco_session)
   await page.setContent(html)
 
-  const data = await getParsedDataBySelector(page, "body > table:nth-child(3) > tbody", [
-    {
-      name: "yellows",
-      selector: "tr:nth-child(4) > th",
-    },
-    {
-      name: "reds",
-      selector: "tr:nth-child(6) > th",
-    },
-    {
-      name: "blues",
-      selector: "tr:nth-child(8) > th",
-    },
-  ])
+  const data = await getParsedDataBySelector(
+    page,
+    "body > table:nth-child(3) > tbody",
+    overallGradesSelectors
+  )
 
-  const dataToOneObject = data.reduce((acc, item) => ({ ...acc, ...item }), {})
-  return dataToOneObject
+  return formatOverallGrades(data)
 }

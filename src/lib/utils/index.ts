@@ -1,12 +1,20 @@
-import { Grade } from "../healpers/parsing"
 import { JournalItem } from "../types/index"
-import GradeDto from "./Grade.dto"
+import { Grade } from "../types/journal"
+import { ResponseDataItem } from "../types/parsing"
+import GradeDto from "../dtos/Grade.dto"
 
 export function zipObjects(...rows: any[][]) {
   return rows[0].map(
     (_, i) => rows.map((row) => row[i]).reduce((acc, item) => ({ ...acc, ...item })),
     {}
   )
+}
+
+export function zipClassesAndGrades(classNames: ResponseDataItem[], allGrades: Grade[]) {
+  return classNames.map((c, i) => {
+    const grades = allGrades.filter((g) => g.classIndex === i)
+    return { ...c, grades } as JournalItem
+  })
 }
 
 export function formatZippedClassesAndGrades(zipped: JournalItem[]) {

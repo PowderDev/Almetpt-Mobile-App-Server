@@ -1,4 +1,4 @@
-import { Grade } from "../healpers/parsing"
+import { Grade } from "../types/journal"
 
 export default class GradeDto {
   day: string
